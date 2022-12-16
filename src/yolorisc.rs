@@ -3,6 +3,7 @@ use crate::alu::{Alu, OpAlu};
 pub struct YoloRisc {
     pub registers: [u8; 8],
     pub program_counter: usize,
+    pub memory: [u8; 256],
     alu: Alu,
 }
 
@@ -11,6 +12,7 @@ impl YoloRisc {
         YoloRisc {
             registers: [0; 8],
             program_counter: 0,
+            memory: [0; 256],
             alu: Alu::new(),
         }
     }
@@ -38,6 +40,12 @@ impl YoloRisc {
                 println!("Program ended");
                 std::process::exit(0);
             }
+            OpCodes::ST => {
+                self.memory[instruction.dst] = self.registers[instruction.lhs];
+            }
+            OpCodes::LD => {
+                self.registers[instruction.dst] = self.memory[instruction.lhs];
+            }
         }
     }
 }
@@ -49,6 +57,8 @@ pub enum OpCodes {
     MOV = 6,
     PRT = 7,
     END = 8,
+    ST = 9,
+    LD = 10,
 }
 
 impl TryFrom<i32> for OpCodes {

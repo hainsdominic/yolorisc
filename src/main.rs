@@ -189,4 +189,32 @@ mod tests {
 
         assert_eq!(registers, [1, 2, 3, 0, 0, 0, 0, 0]);
     }
+
+    #[test]
+    fn test_memory() {
+        let program = vec![
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 1,
+                lhs: 20,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::ST,
+                dst: 200,
+                lhs: 1,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::LD,
+                dst: 2,
+                lhs: 200,
+                rhs: 0,
+            },
+        ];
+
+        let registers = run_program(program);
+
+        assert_eq!(registers, [0, 20, 20, 0, 0, 0, 0, 0]);
+    }
 }

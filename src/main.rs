@@ -7,11 +7,11 @@ fn main() {
     let program = instructions_from_file("sum.yolo");
 
     let mut cpu = YoloRisc::new();
-    let mut clock = Clock::new();
+    let mut clock = Clock::default();
 
     loop {
         let instruction = &program[cpu.program_counter];
-        cpu.execute(&instruction);
+        cpu.execute(instruction);
         cpu.program_counter += 1;
         clock.tick();
 
@@ -32,11 +32,11 @@ mod tests {
 
     fn run_program(program: Vec<Instruction>) -> Vec<u8> {
         let mut cpu = YoloRisc::new();
-        let mut clock = Clock::new();
+        let mut clock = Clock::default();
 
         loop {
             let instruction = &program[cpu.program_counter];
-            cpu.execute(&instruction);
+            cpu.execute(instruction);
             cpu.program_counter += 1;
             clock.tick();
 

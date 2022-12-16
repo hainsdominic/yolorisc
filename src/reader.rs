@@ -19,16 +19,16 @@ pub fn instructions_from_file(filename: &str) -> Vec<Instruction> {
         let mut parts = line.split_whitespace();
 
         let opcode = usize::from_str_radix(parts.next().unwrap(), 2)
-            .expect(format!("Invalid instruction: {}", line).as_str());
+            .unwrap_or_else(|_| panic!("Invalid instruction: {}", line));
         let dst = usize::from_str_radix(parts.next().unwrap(), 2)
-            .expect(format!("Invalid instruction: {}", line).as_str());
+            .unwrap_or_else(|_| panic!("Invalid instruction: {}", line));
         let lhs = usize::from_str_radix(parts.next().unwrap(), 2)
-            .expect(format!("Invalid instruction: {}", line).as_str());
+            .unwrap_or_else(|_| panic!("Invalid instruction: {}", line));
         let rhs = usize::from_str_radix(parts.next().unwrap(), 2)
-            .expect(format!("Invalid instruction: {}", line).as_str());
+            .unwrap_or_else(|_| panic!("Invalid instruction: {}", line));
 
         let opcode = OpCodes::try_from(opcode as i32)
-            .expect(format!("Invalid instruction: {}", line).as_str());
+            .unwrap_or_else(|_| panic!("Invalid instruction: {}", line));
 
         instructions.push(Instruction {
             opcode,

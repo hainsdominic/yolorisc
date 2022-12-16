@@ -1,3 +1,4 @@
+#[derive(Default)]
 pub struct Alu {
     carry: bool,
     zero: bool,
@@ -16,14 +17,6 @@ pub enum OpAlu {
 }
 
 impl Alu {
-    pub fn new() -> Alu {
-        Alu {
-            carry: false,
-            zero: false,
-            negative: false,
-        }
-    }
-
     pub fn execute(&mut self, opcode: &OpAlu, lhs: u8, rhs: u8) -> u8 {
         match opcode {
             OpAlu::ADD => {

@@ -7,13 +7,19 @@ pub struct YoloRisc {
     alu: Alu,
 }
 
+impl Default for YoloRisc {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl YoloRisc {
     pub fn new() -> YoloRisc {
         YoloRisc {
             registers: [0; 8],
             program_counter: 0,
             memory: [0; 256],
-            alu: Alu::new(),
+            alu: Alu::default(),
         }
     }
 
@@ -88,15 +94,12 @@ pub struct Instruction {
     pub rhs: usize,
 }
 
+#[derive(Default)]
 pub struct Clock {
     cycles: u64,
 }
 
 impl Clock {
-    pub fn new() -> Clock {
-        Clock { cycles: 0 }
-    }
-
     pub fn tick(&mut self) {
         self.cycles += 1;
     }

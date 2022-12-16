@@ -52,6 +52,19 @@ impl YoloRisc {
             OpCodes::LD => {
                 self.registers[instruction.dst] = self.memory[instruction.lhs];
             }
+            OpCodes::JZ => {
+                if self.alu.zero {
+                    self.program_counter = instruction.lhs - 1;
+                }
+            }
+            OpCodes::JNZ => {
+                if !self.alu.zero {
+                    self.program_counter = instruction.lhs - 1;
+                }
+            }
+            OpCodes::JMP => {
+                self.program_counter = instruction.lhs - 1;
+            }
         }
     }
 }
@@ -65,6 +78,9 @@ pub enum OpCodes {
     END = 8,
     ST = 9,
     LD = 10,
+    JZ = 11,
+    JNZ = 12,
+    JMP = 13,
 }
 
 impl TryFrom<i32> for OpCodes {

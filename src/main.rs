@@ -1,24 +1,25 @@
 use yolorisc::{
     reader::instructions_from_file,
-    yolorisc::{Clock, YoloRisc},
+    yolorisc::{Clock, Instruction, YoloRisc},
 };
 
 fn main() {
     let program = instructions_from_file("sum.yolo");
+    run_program(program);
+}
 
+fn run_program(program: Vec<Instruction>) -> Vec<u8> {
     let mut cpu = YoloRisc::new();
     let mut clock = Clock::default();
 
-    loop {
-        let instruction = &program[cpu.program_counter];
-        cpu.execute(instruction);
+    while cpu.program_counter < program.len() {
         cpu.program_counter += 1;
         clock.tick();
-
-        if cpu.program_counter == program.len() {
-            break;
-        }
+        let instruction = &program[cpu.program_counter - 1];
+        cpu.execute(instruction);
     }
+
+    cpu.registers.to_vec()
 }
 
 #[cfg(test)]
@@ -29,24 +30,6 @@ mod tests {
     };
 
     use super::*;
-
-    fn run_program(program: Vec<Instruction>) -> Vec<u8> {
-        let mut cpu = YoloRisc::new();
-        let mut clock = Clock::default();
-
-        loop {
-            let instruction = &program[cpu.program_counter];
-            cpu.execute(instruction);
-            cpu.program_counter += 1;
-            clock.tick();
-
-            if cpu.program_counter == program.len() {
-                break;
-            }
-        }
-
-        cpu.registers.to_vec()
-    }
 
     #[test]
     fn test_mov() {
@@ -216,5 +199,131 @@ mod tests {
         let registers = run_program(program);
 
         assert_eq!(registers, [0, 20, 20, 0, 0, 0, 0, 0]);
+    }
+
+    #[test]
+    fn test_jmp() {
+        let program = vec![
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 1,
+                lhs: 20,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::JMP,
+                dst: 0,
+                lhs: 4,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 2,
+                lhs: 20,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 3,
+                lhs: 20,
+                rhs: 0,
+            },
+        ];
+
+        let registers = run_program(program);
+
+        assert_eq!(registers, [0, 20, 0, 20, 0, 0, 0, 0]);
+    }
+
+    #[test]
+    fn test_jz() {
+        let program = vec![
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 0,
+                lhs: 5,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 1,
+                lhs: 5,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::ALU(OpAlu::SUB),
+                dst: 0,
+                lhs: 0,
+                rhs: 1,
+            },
+            Instruction {
+                opcode: OpCodes::JZ,
+                dst: 0,
+                lhs: 6,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 2,
+                lhs: 20,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 3,
+                lhs: 20,
+                rhs: 0,
+            },
+        ];
+
+        let registers = run_program(program);
+
+        assert_eq!(registers, [0, 5, 0, 20, 0, 0, 0, 0]);
+    }
+
+    #[test]
+    fn test_jnz() {
+        let program = vec![
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 0,
+                lhs: 5,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 1,
+                lhs: 6,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::ALU(OpAlu::SUB),
+                dst: 0,
+                lhs: 0,
+                rhs: 1,
+            },
+            Instruction {
+                opcode: OpCodes::JNZ,
+                dst: 0,
+                lhs: 6,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 2,
+                lhs: 20,
+                rhs: 0,
+            },
+            Instruction {
+                opcode: OpCodes::MOV,
+                dst: 3,
+                lhs: 20,
+                rhs: 0,
+            },
+        ];
+
+        let registers = run_program(program);
+
+        assert_eq!(registers, [255, 6, 0, 20, 0, 0, 0, 0]);
     }
 }

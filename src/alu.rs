@@ -1,8 +1,8 @@
 #[derive(Default)]
 pub struct Alu {
-    carry: bool,
-    zero: bool,
-    negative: bool,
+    pub carry: bool,
+    pub zero: bool,
+    pub negative: bool,
 }
 
 #[repr(u8)]

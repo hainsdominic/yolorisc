@@ -4,7 +4,8 @@ use yolorisc::{
 };
 
 fn main() {
-    let program = instructions_from_file("sum.yolo");
+    let args: Vec<String> = std::env::args().collect();
+    let program = instructions_from_file(args.get(1).expect("No file provided"));
     run_program(program);
 }
 

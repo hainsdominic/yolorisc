@@ -1,7 +1,6 @@
 use std::{
     fs::File,
     io::{BufRead, BufReader},
-    path::Path,
 };
 
 use crate::yolorisc::{Instruction, OpCodes};
@@ -9,7 +8,7 @@ use crate::yolorisc::{Instruction, OpCodes};
 pub fn instructions_from_file(filename: &str) -> Vec<Instruction> {
     let mut instructions = Vec::new();
 
-    let file = File::open(Path::new("programs").join(filename)).unwrap();
+    let file = File::open(filename).unwrap();
     let reader = BufReader::new(file);
 
     for line in reader.lines().filter(|line| {
